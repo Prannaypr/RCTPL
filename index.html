@@ -1306,6 +1306,23 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
 .omega-affordability-card p,.omega-affordability-card small{line-height:1.45}
 </style>
 
+
+<style id="omega-vshield-single-screen-table">
+/* Keep the V-Shield plan matrix fully visible without horizontal swiping. */
+#vshield-plans-table-wrap{width:100%;max-width:100%;overflow-x:hidden!important}
+#vshield-plans-table{width:100%;min-width:0!important;table-layout:fixed;border-collapse:collapse}
+#vshield-plans-table th,#vshield-plans-table td{padding:9px 6px!important;overflow-wrap:anywhere;vertical-align:middle}
+#vshield-plans-table th:first-child,#vshield-plans-table td:first-child{width:36%;text-align:left}
+#vshield-plans-table th:nth-child(2),#vshield-plans-table td:nth-child(2){width:34%;text-align:right}
+#vshield-plans-table th:nth-child(3),#vshield-plans-table td:nth-child(3){width:30%;text-align:right}
+@media(max-width:600px){#vshield-plans-table th,#vshield-plans-table td{padding:8px 4px!important;font-size:10px!important}#vshield-plans-table th{font-size:9px!important;line-height:1.2}#vshield-plans-table td:first-child{font-size:10px!important}#vshield-plans-table td:nth-child(2),#vshield-plans-table td:nth-child(3){font-size:10px!important}}
+</style>
+
+<style id="vshield-plan-price-cards-fix">
+#vshield-plans-table-wrap .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#vshield-plans-table-wrap .grid > div{min-width:0;overflow-wrap:anywhere}
+@media(min-width:640px){#vshield-plans-table-wrap .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
 </head>
 <body x-data="rateCardApp()"
       :class="darkMode ? 'dark bg-black text-slate-100' : 'bg-[#F2F5F9] text-slate-900'"
@@ -1737,7 +1754,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
             <button @click.stop="openModal(group)" class="omega-view-btn omega-aff-details-btn">
               View Offers <span>→</span>
             </button>
-            <button type="button" @click.stop="copyQuotation(group)" class="omega-quotation-btn" title="Copy selected model offer quotation">
+            <button type="button" @click.stop="openQuotationBuilder(group)" class="omega-quotation-btn" title="Choose payment type and offers before copying quotation">
               <span aria-hidden="true">▣</span> Share Quotation
             </button>
           </div>
@@ -2208,31 +2225,22 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                                 <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Prices are calculated from the selected device MOP.</p>
                                 <p x-show="isVShieldPromoActive()" class="text-[10px] font-black text-emerald-700 dark:text-emerald-300 mt-1" x-cloak>Festival offers valid 11–15 October 2026</p>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full border-collapse text-xs min-w-[560px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300">
-                                            <th class="px-3 py-2 text-left">Plan</th>
-                                            <th class="px-3 py-2 text-right">Price to Customer</th>
-                                            <th class="px-3 py-2 text-right">Processing Fee</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-slate-800 dark:text-slate-200">
-                                        <template x-for="plan in ['SDP — 1 Year','SDP — 6 Months','EW — 1 Year','EW — 6 Months','CDP']" :key="plan">
-                                            <tr class="border-t border-slate-200 dark:border-slate-700">
-                                                <td class="px-3 py-3 font-semibold" x-text="plan"></td>
-                                                <td class="px-3 py-3 text-right whitespace-nowrap">
-                                                    <span class="font-black text-slate-900 dark:text-white" :class="isVShieldPlanDiscounted(selectedModel,plan) ? 'text-emerald-700 dark:text-emerald-300' : ''" x-text="vShieldPlanPrice(selectedModel,plan) == null ? 'NA' : '₹' + vShieldPlanPrice(selectedModel,plan).toLocaleString('en-IN')"></span>
-                                                    <span x-show="isVShieldPlanDiscounted(selectedModel,plan)" x-cloak class="block text-[8px] font-black text-emerald-700 dark:text-emerald-300" x-text="plan === 'SDP — 6 Months' && isY11Y21Sdp101Eligible(selectedModel) ? 'SPECIAL ₹101 OFFER' : '40% OFF'"></span>
-                                                </td>
-                                                <td class="px-3 py-3 text-right whitespace-nowrap">
-                                                    <span x-text="plan === 'CDP' ? '₹' + getCdpPf(Number(selectedModel?.mop || 0)).toLocaleString('en-IN') : '₹0'"></span>
-                                                    <span class="block text-[8px] text-slate-500 dark:text-slate-400" x-text="plan === 'CDP' ? 'Applicable' : 'No fee'"></span>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
+                            <div id="vshield-plans-table-wrap" class="w-full p-2 sm:p-3">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <template x-for="plan in ['SDP — 1 Year','SDP — 6 Months','EW — 1 Year','EW — 6 Months','CDP']" :key="plan">
+                                        <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/70 p-3 min-w-0 shadow-sm">
+                                            <div class="text-[10px] sm:text-xs font-extrabold leading-tight text-slate-700 dark:text-slate-200" x-text="plan"></div>
+                                            <div class="mt-2 text-[9px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Price to Customer</div>
+                                            <div class="text-base sm:text-lg font-black leading-tight text-slate-900 dark:text-white break-words" :class="isVShieldPlanDiscounted(selectedModel,plan) ? 'text-emerald-700 dark:text-emerald-300' : ''" x-text="vShieldPlanPrice(selectedModel,plan) == null ? 'NA' : '₹' + vShieldPlanPrice(selectedModel,plan).toLocaleString('en-IN')"></div>
+                                            <div x-show="isVShieldPlanDiscounted(selectedModel,plan)" x-cloak class="mt-1 inline-block rounded-md bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-1 text-[8px] font-black text-emerald-700 dark:text-emerald-300" x-text="plan === 'SDP — 6 Months' && isY11Y21Sdp101Eligible(selectedModel) ? 'SPECIAL ₹101 OFFER' : '40% OFF'"></div>
+                                            <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 flex items-start justify-between gap-1">
+                                                <span class="text-[9px] leading-tight text-slate-500 dark:text-slate-400">Processing Fee</span>
+                                                <span class="text-[10px] font-extrabold text-slate-800 dark:text-slate-100 text-right" x-text="plan === 'CDP' ? '₹' + getCdpPf(Number(selectedModel?.mop || 0)).toLocaleString('en-IN') : '₹0'"></span>
+                                            </div>
+                                            <div class="text-[8px] text-slate-500 dark:text-slate-400 text-right" x-text="plan === 'CDP' ? 'Applicable' : 'No fee'"></div>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                             <div class="px-3 py-2 border-t border-slate-200 dark:border-slate-700 text-[9px] text-slate-500 dark:text-slate-400">
                                 40% discount applies to eligible listed models above ₹20,000 during 11–15 October 2026, for 1-year and 6-month SDP/EW plans. Outside this period, normal prices apply. CDP processing fee is based on device MOP.
@@ -2387,6 +2395,15 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                 sortBy: 'default',
                 selectedModel: null,
                 selectedGroupForModal: null,
+                showQuotationBuilder: false,
+                quotationGroup: null,
+                quotationPaymentType: 'Paper Finance',
+                quotationPartner: 'Bajaj Finance',
+                quotationScheme: '24|0',
+                quotationVariantIndex: 0,
+                quotationVShieldPlan: 'None',
+                quotationOfferOptions: [],
+                quotationSelectedOffers: [],
                 variantSelections: {},
                 activeTab: 'paper-finance',
                 calcPartner: 'Bajaj Finance',
@@ -17915,64 +17932,98 @@ offerHighlights: {
                     this.variantSelections = {};
                 },
 
-                async copyQuotation(group) {
-                    const model = this.getSelectedVariant(group) || {};
+                quotationModel() {
+                    const group = this.quotationGroup;
+                    if (!group) return {};
+                    return (group.variants || [])[Number(this.quotationVariantIndex)] || this.getSelectedVariant(group) || {};
+                },
+                getQuotationOfferOptions(model) {
+                    if (!model) return [];
+                    const money = value => typeof value === 'number' ? '₹' + value.toLocaleString('en-IN') : (value == null || value === '' ? 'NA' : String(value));
+                    const options = [
+                        { key: 'mop', label: 'MOP: ' + money(model.mop) },
+                        { key: 'minSwipe', label: 'Minimum Swipe: ' + money(model.minSwipe) },
+                        { key: 'ccEmiCashback', label: 'EMI Cashback: ' + (model.ccEmiCashback || 'NA') },
+                        { key: 'ccFullswipeCashback', label: 'Full Swipe Cashback: ' + (model.ccFullswipeCashback || 'NA') },
+                        { key: 'upiCashback', label: 'UPI Cashback: ' + (model.upiCashback || 'NA') }
+                    ];
+                    const offerKey = /(offer|cashback|swipe|emi|upi|scheme|discount|valid|bank|finance|partner|processing|gift|warranty|benefit|exchange|bonus|coupon|price|card|accessor)/i;
+                    const excluded = new Set(['name','series','specs','variant','mop','minSwipe','ccEmiCashback','ccFullswipeCashback','upiCashback','id','image','imageUrl','colors','ram','rom']);
+                    for (const [key, value] of Object.entries(model)) {
+                        if (excluded.has(key) || !offerKey.test(key) || value == null || value === '') continue;
+                        let printable;
+                        if (Array.isArray(value)) printable = value.map(v => typeof v === 'object' && v !== null ? Object.entries(v).map(([k,x]) => `${k}: ${x == null ? 'NA' : String(x)}`).join(' | ') : String(v)).join(' ; ');
+                        else if (typeof value === 'object') printable = Object.entries(value).map(([k,x]) => `${k}: ${x == null ? 'NA' : String(x)}`).join(' | ');
+                        else printable = String(value);
+                        if (printable.trim()) options.push({key, label: key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()) + ': ' + printable});
+                    }
+                    return options.filter((item, index, arr) => arr.findIndex(x => x.key === item.key) === index);
+                },
+                refreshQuotationOffers() {
+                    this.quotationOfferOptions = this.getQuotationOfferOptions(this.quotationModel());
+                    this.quotationSelectedOffers = this.quotationOfferOptions.map(item => item.key);
+                },
+                openQuotationBuilder(group) {
+                    this.quotationGroup = group;
+                    this.quotationVariantIndex = Number(this.variantSelections[group.name] || 0);
+                    this.quotationPaymentType = 'Paper Finance';
+                    this.quotationPartner = this.calcPartner || 'Bajaj Finance';
+                    this.quotationScheme = this.calcScheme || '24|0';
+                    this.quotationVShieldPlan = 'None';
+                    this.refreshQuotationOffers();
+                    this.showQuotationBuilder = true;
+                },
+                async copyQuotation(group, selections = null) {
+                    const model = selections?.model || this.getSelectedVariant(group) || {};
                     const money = value => typeof value === 'number' ? '₹' + value.toLocaleString('en-IN') : (value == null || value === '' ? 'NA' : String(value));
                     const title = model.name || group.name || 'vivo';
                     const lines = [
                         '🧾 vivo OFFER QUOTATION',
                         'Model: ' + title,
                         'Variant: ' + (model.specs || model.variant || 'NA'),
-                        '',
-                        '📌 PRICE & STANDARD OFFERS',
-                        'MOP: ' + money(model.mop),
-                        'Minimum Swipe: ' + money(model.minSwipe),
-                        'EMI Cashback: ' + money(model.ccEmiCashback),
-                        'Full Swipe Cashback: ' + money(model.ccFullswipeCashback),
-                        'UPI Cashback: ' + money(model.upiCashback)
+                        'Payment Type: ' + (selections?.paymentType || 'Not selected'),
                     ];
-
-                    // Include every additional offer/scheme field available for the selected variant.
-                    const offerKey = /(offer|cashback|swipe|emi|upi|mop|min.?swipe|scheme|v.?shield|discount|valid|bank|finance|partner|processing|pf|gift|warranty|benefit|exchange|bonus|coupon|price|card)/i;
-                    const standardKeys = new Set(['name','specs','variant','mop','minSwipe','ccEmiCashback','ccFullswipeCashback','upiCashback']);
-                    const extraLines = [];
-                    for (const [key, value] of Object.entries(model)) {
-                        if (standardKeys.has(key) || !offerKey.test(key) || value == null || value === '') continue;
-                        let printable;
-                        if (Array.isArray(value)) {
-                            printable = value.map(item => typeof item === 'object' && item !== null
-                                ? Object.entries(item).map(([k,v]) => `${k}: ${v == null ? 'NA' : (typeof v === 'object' ? JSON.stringify(v) : v)}`).join(' | ')
-                                : String(item)).join(' ; ');
-                        } else if (typeof value === 'object') {
-                            printable = Object.entries(value).map(([k,v]) => `${k}: ${v == null ? 'NA' : (typeof v === 'object' ? JSON.stringify(v) : v)}`).join(' | ');
-                        } else {
-                            printable = String(value);
-                        }
-                        if (printable.trim()) extraLines.push(`${key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())}: ${printable}`);
+                    if (selections?.paymentType === 'Paper Finance') {
+                        lines.push('Finance Vendor: ' + (selections.partner || 'NA'), 'Rate Card Scheme (Tenure / Advance EMIs): ' + (selections.scheme || 'NA'));
                     }
-                    if (extraLines.length) lines.push('', '🎁 OTHER AVAILABLE OFFERS & SCHEMES', ...extraLines);
+                    lines.push('', '📌 SELECTED PRICE & OFFERS');
+                    const selectedKeys = selections?.offerKeys || ['mop','minSwipe','ccEmiCashback','ccFullswipeCashback','upiCashback'];
+                    const options = this.getQuotationOfferOptions(model);
+                    for (const option of options) if (selectedKeys.includes(option.key)) lines.push('• ' + option.label);
+                    if (selections?.vshieldPlan && selections.vshieldPlan !== 'None') {
+                        const plan = selections.vshieldPlan;
+                        const price = this.vShieldPlanPrice(model, plan);
+                        lines.push('', '🛡️ V-SHIELD PLAN', 'Plan: ' + plan, 'Price to Customer: ' + (price == null ? 'NA' : money(price)));
+                        lines.push('Processing Fee: ' + (plan === 'CDP' ? money(this.getCdpPf(Number(model.mop || 0))) : '₹0'));
+                        if (this.isVShieldPlanDiscounted(model, plan)) lines.push('Discount: ' + (plan === 'SDP — 6 Months' && this.isY11Y21Sdp101Eligible(model) ? 'SPECIAL ₹101 OFFER' : '40% OFF'));
+                    }
                     const profileName = (this.currentUser?.displayName || this.currentUser?.email?.split('@')[0] || 'User').trim();
                     const profilePhone = (this.currentUser?.phoneNumber || localStorage.getItem('omegaProfilePhone') || document.getElementById('omegaProfilePhone')?.value || '').trim();
                     lines.push('', 'Please confirm offer eligibility and validity at the store.', '— ' + profileName + (profilePhone ? '\n📞 ' + profilePhone : ''));
                     const quotation = lines.join('\n');
                     try {
-                        if (navigator.clipboard && window.isSecureContext) {
-                            await navigator.clipboard.writeText(quotation);
-                        } else {
-                            const field = document.createElement('textarea');
-                            field.value = quotation;
-                            field.setAttribute('readonly', '');
-                            field.style.position = 'fixed'; field.style.left = '-9999px'; field.style.opacity = '0';
-                            document.body.appendChild(field); field.select();
-                            const copied = document.execCommand('copy'); field.remove();
-                            if (!copied) throw new Error('Copy unavailable');
+                        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(quotation);
+                        else {
+                            const field = document.createElement('textarea'); field.value = quotation; field.setAttribute('readonly', '');
+                            field.style.position = 'fixed'; field.style.left = '-9999px'; field.style.opacity = '0'; document.body.appendChild(field); field.select();
+                            const copied = document.execCommand('copy'); field.remove(); if (!copied) throw new Error('Copy unavailable');
                         }
-                        alert('🧾 Full quotation copied with all available offers and schemes. Paste it into WhatsApp to share.');
-                    } catch (error) {
-                        window.prompt('Copy this full quotation:', quotation);
-                    }
+                        this.showQuotationBuilder = false;
+                        alert('🧾 Selected quotation copied. Paste it into WhatsApp to share.');
+                    } catch (error) { window.prompt('Copy this quotation:', quotation); }
                 },
-
+                confirmQuotationCopy() {
+                    const model = this.quotationModel();
+                    if (!model || !Object.keys(model).length) return;
+                    this.copyQuotation(this.quotationGroup, {
+                        model,
+                        paymentType: this.quotationPaymentType,
+                        partner: this.quotationPartner,
+                        scheme: this.quotationScheme,
+                        vshieldPlan: this.quotationVShieldPlan,
+                        offerKeys: [...this.quotationSelectedOffers]
+                    });
+                },
                 openModal(group) {
                     let variant = this.getSelectedVariant(group);
                     this.selectedModel = variant;
@@ -18340,5 +18391,46 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOmegaOfferLibra
   try { const field=document.getElementById('omegaProfilePhone'); if(field) field.value=localStorage.getItem('omegaProfilePhone')||''; } catch(e) {}
 })();
 </script>
+
+<!-- Quotation selection wizard -->
+<div x-show="showQuotationBuilder" x-cloak x-transition.opacity class="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-sm" @keydown.escape.window="showQuotationBuilder=false">
+  <div class="w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl bg-white text-slate-900 shadow-2xl border border-slate-200 dark:bg-slate-900 dark:text-white dark:border-slate-700" @click.stop>
+    <div class="sticky top-0 z-10 flex items-center justify-between gap-3 px-5 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+      <div><h2 class="text-lg font-black">🧾 Build Offer Quotation</h2><p class="text-xs text-slate-500 dark:text-slate-400 mt-1" x-text="(quotationModel()?.name || quotationGroup?.name || 'vivo') + ' • Select details before copying' "></p></div>
+      <button type="button" @click="showQuotationBuilder=false" class="rounded-lg px-3 py-2 bg-slate-100 dark:bg-slate-800 font-bold" aria-label="Close">✕</button>
+    </div>
+    <div class="p-5 space-y-5">
+      <div>
+        <label class="block text-xs font-extrabold mb-2">1. Select Variant</label>
+        <select class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 text-sm" x-model.number="quotationVariantIndex" @change="refreshQuotationOffers()">
+          <template x-for="(v,i) in (quotationGroup?.variants || [])" :key="v.id || i"><option :value="i" x-text="(v.specs || v.variant || 'Variant') + ' — ₹' + Number(v.mop || 0).toLocaleString('en-IN')"></option></template>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold mb-2">2. Select Payment Type</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <template x-for="type in ['Paper Finance','Credit Card EMI','Full Swipe','UPI']" :key="type"><button type="button" @click="quotationPaymentType=type" :class="quotationPaymentType===type ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600'" class="rounded-xl border p-3 text-xs font-bold" x-text="type"></button></template>
+        </div>
+      </div>
+      <div x-show="quotationPaymentType==='Paper Finance'" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label class="block text-xs font-extrabold mb-2">3. Select Finance Vendor</label><select x-model="quotationPartner" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 text-sm"><option>Bajaj Finance</option><option>IDFC First Bank</option><option>DMI Finance</option><option>HDB Financial Services</option><option>TVS Credit</option><option>ICICI Bank</option><option>Chola</option><option>Poonawalla</option><option>Home Credit</option></select></div>
+        <div><label class="block text-xs font-extrabold mb-2">Rate Card Scheme / Tenure</label><select x-model="quotationScheme" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 text-sm"><option>6|0</option><option>8|0</option><option>9|0</option><option>10|0</option><option>12|0</option><option>15|0</option><option>18|0</option><option>24|0</option><option>24|3</option><option>24|6</option></select></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between gap-2 mb-2"><label class="text-xs font-extrabold">4. Select Offers to Include</label><button type="button" class="text-xs font-bold text-blue-600" @click="quotationSelectedOffers = quotationSelectedOffers.length === quotationOfferOptions.length ? [] : quotationOfferOptions.map(o=>o.key)" x-text="quotationSelectedOffers.length === quotationOfferOptions.length ? 'Deselect All' : 'Select All'"></button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+          <template x-for="offer in quotationOfferOptions" :key="offer.key"><label class="flex items-start gap-2 text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><input type="checkbox" class="mt-0.5 accent-blue-600" :value="offer.key" x-model="quotationSelectedOffers"><span class="break-words" x-text="offer.label"></span></label></template>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold mb-2">5. Add V-Shield Plan (Optional)</label>
+        <select x-model="quotationVShieldPlan" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 text-sm"><option value="None">No V-Shield plan</option><option>SDP — 1 Year</option><option>SDP — 6 Months</option><option>EW — 1 Year</option><option>EW — 6 Months</option><option>CDP</option></select>
+        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">V-Shield price is calculated using the selected variant's MOP and current eligibility rules.</p>
+      </div>
+      <div class="flex gap-3 pt-1"><button type="button" @click="showQuotationBuilder=false" class="flex-1 rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-3 text-sm font-bold">Cancel</button><button type="button" @click="confirmQuotationCopy()" class="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 text-sm font-black">🧾 Copy Selected Quotation</button></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
