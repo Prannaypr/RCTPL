@@ -1594,8 +1594,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
 
     <!-- Top Spacer to prevent content overlap with fixed header -->
     <div x-show="currentTab === 'Affordability'"
-         class="w-full"
-         :style="'height: calc(185px + env(safe-area-inset-top))'"></div>
+         class="w-full oz-spacer-off"></div>
 
 <!-- Product Header Section -->
 <header :class="darkMode ? 'text-white border-white/10' : 'text-slate-900 border-slate-200'"
@@ -18432,5 +18431,196 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOmegaOfferLibra
   </div>
 </div>
 
+<style id="omega-premium-shell">
+/* Omega Zone premium shell: one token set, applied last so it wins the cascade.
+   Layout: sidebar app on desktop, tab-bar app on phones. No logic touched. */
+:root{
+  --oz-bg:#f4f6fa; --oz-surface:#fff; --oz-line:#e3e8f0; --oz-text:#0e1726; --oz-muted:#5b6b82;
+  --oz-brand:#0b5fd6; --oz-brand-soft:#e8f0fd;
+  --oz-r-card:16px; --oz-r-ctl:10px; --oz-side:236px;
+  --oz-shadow:0 1px 2px rgba(14,23,38,.05),0 6px 18px -8px rgba(14,23,38,.10);
+  --oz-shadow-up:0 2px 4px rgba(14,23,38,.06),0 16px 32px -14px rgba(11,95,214,.22);
+}
+.dark{ --oz-bg:#0a0e14; --oz-surface:#121821; --oz-line:#243042; --oz-text:#eef3fa; --oz-muted:#93a4bb;
+  --oz-brand:#5aa2ff; --oz-brand-soft:#14263f; --oz-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -10px rgba(0,0,0,.6); --oz-shadow-up:0 2px 4px rgba(0,0,0,.5),0 18px 34px -14px rgba(0,0,0,.7);}
+body{background:var(--oz-bg)!important;color:var(--oz-text);letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--oz-brand)!important;outline-offset:2px}
+
+/* Header: quiet, solid, sticky */
+.omega-top-header{background:color-mix(in srgb,var(--oz-surface) 88%,transparent)!important;border-bottom:1px solid var(--oz-line)!important;box-shadow:none!important}
+.omega-header-search,.omega-filter-search{background:var(--oz-bg)!important;border:1px solid var(--oz-line)!important;border-radius:var(--oz-r-ctl)!important}
+.omega-header-search:focus-within,.omega-filter-search:focus-within{border-color:var(--oz-brand)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--oz-brand) 18%,transparent)}
+.omega-theme-btn{border-radius:var(--oz-r-ctl)!important;background:var(--oz-surface)!important;border-color:var(--oz-line)!important}
+
+/* Cards: one radius, one shadow, calm lift */
+.omega-product-card,.omega-affordability-card,.glass-card{background:var(--oz-surface)!important;border:1px solid var(--oz-line)!important;border-radius:var(--oz-r-card)!important;box-shadow:var(--oz-shadow)!important;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important}
+@media(hover:hover){.omega-product-card:hover,.omega-affordability-card:hover,.glass-card:hover{transform:translateY(-3px)!important;box-shadow:var(--oz-shadow-up)!important;border-color:color-mix(in srgb,var(--oz-brand) 35%,var(--oz-line))!important}}
+.omega-product-card.selected{border:1.5px solid var(--oz-brand)!important;background:var(--oz-brand-soft)!important}
+.omega-product-card:hover .omega-product-image img{transform:scale(1.03)}
+.omega-product-image,.omega-aff-image{border-radius:12px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--oz-brand-soft) 55%,var(--oz-surface)),var(--oz-surface))!important}
+.omega-view-btn,.omega-primary-btn,.offer-btn{background:var(--oz-brand)!important;border-radius:var(--oz-r-ctl)!important;box-shadow:none!important;border:0!important}
+.omega-view-btn:hover,.omega-primary-btn:hover,.offer-btn:hover{filter:brightness(1.08)}
+.omega-series-pills button,.omega-filter-row select,.omega-variant-pills button{border-radius:var(--oz-r-ctl)!important}
+.omega-series-pills button.active,.omega-variant-pills button.active{background:var(--oz-brand)!important;border-color:var(--oz-brand)!important;box-shadow:none!important}
+.omega-product-toolbar{background:var(--oz-surface)!important;border:1px solid var(--oz-line)!important;border-radius:var(--oz-r-card)!important;box-shadow:none!important}
+.omega-hero,.omega-affordability-hero{border-radius:20px!important;box-shadow:var(--oz-shadow)!important}
+.omega-section-heading h2{letter-spacing:-.03em}
+
+/* Modals: centered dialog on desktop, bottom sheet on phone */
+.product-modal-overlay{background:rgba(8,14,24,.55)!important;backdrop-filter:blur(8px)}
+.product-modal-shell{background:var(--oz-surface)!important;border:1px solid var(--oz-line);border-radius:22px!important;box-shadow:0 30px 80px -20px rgba(0,0,0,.45)!important}
+.product-modal-header{background:var(--oz-surface)!important;border-bottom:1px solid var(--oz-line)!important}
+.product-modal-tabs{background:var(--oz-bg)!important;border-radius:12px!important}
+@keyframes oz-sheet{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.product-modal-shell{animation:oz-sheet .22s cubic-bezier(.2,.8,.2,1)}
+
+/* Desktop: left sidebar replaces the floating dock */
+@media(min-width:1024px){
+  body{padding-left:var(--oz-side)!important}
+  body nav.fixed.z-50{left:0!important;right:auto!important;top:0!important;bottom:0!important;transform:none!important;width:var(--oz-side)!important;height:100dvh!important;border-radius:0!important;border:0!important;border-right:1px solid var(--oz-line)!important;background:var(--oz-surface)!important;box-shadow:none!important;backdrop-filter:none!important;padding:96px 14px 20px!important;overflow:visible!important}
+  body nav.fixed.z-50::before{content:"Omega Zone";position:absolute;top:26px;left:26px;font-weight:800;font-size:19px;letter-spacing:-.03em;color:var(--oz-text)}
+  body nav.fixed.z-50::after{content:"Retail rate card";position:absolute;top:52px;left:26px;font-size:12px;color:var(--oz-muted)}
+  body nav.fixed.z-50>div{display:flex!important;flex-direction:column!important;height:auto!important;max-width:none!important;gap:4px}
+  body nav.fixed.z-50 button{flex-direction:row!important;justify-content:flex-start!important;gap:12px!important;height:44px;padding:0 14px!important;border-radius:var(--oz-r-ctl)!important;color:var(--oz-muted)!important;transition:background .15s,color .15s}
+  body nav.fixed.z-50 button:hover{background:var(--oz-bg)!important;color:var(--oz-text)!important}
+  body nav.fixed.z-50 button.bottom-nav-active{background:var(--oz-brand-soft)!important;color:var(--oz-brand)!important}
+  body nav.fixed.z-50 button span{font-size:14px!important;font-weight:600!important;text-transform:none!important;letter-spacing:0!important}
+  body nav.fixed.z-50 .nav-indicator{left:0!important;bottom:auto!important;top:10px;width:3px!important;height:24px!important;background:var(--oz-brand)!important;border-radius:0 3px 3px 0}
+  .omega-desktop-header-nav{display:none!important}
+  .omega-header-inner{grid-template-columns:1fr auto!important}
+  .omega-header-search{width:min(420px,38vw)!important}
+  .omega-brand-wrap{display:none!important}
+  .omega-product-grid,.omega-affordability-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))!important;gap:20px!important}
+  main{padding-bottom:48px!important}
+  .omega-page,.omega-product-shell{max-width:1560px}
+}
+
+/* Phone: clean tab bar with readable labels */
+@media(max-width:1023px){
+  body nav.fixed.z-50{left:12px!important;right:12px!important;width:auto!important;transform:none!important;bottom:max(10px,env(safe-area-inset-bottom))!important;border-radius:20px!important;background:color-mix(in srgb,var(--oz-surface) 92%,transparent)!important;border:1px solid var(--oz-line)!important;box-shadow:0 10px 30px -10px rgba(14,23,38,.35)!important}
+  body nav.fixed.z-50>div{height:62px!important}
+  body nav.fixed.z-50 button span{font-size:11px!important;font-weight:600!important;text-transform:none!important;letter-spacing:0!important}
+  body nav.fixed.z-50 button.bottom-nav-active{color:var(--oz-brand)!important}
+  .product-modal-shell{border-radius:22px 22px 0 0!important;position:relative}
+  .product-modal-shell::before{content:"";position:absolute;top:6px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:4px;background:var(--oz-line);z-index:5}
+  .product-modal-overlay{align-items:flex-end!important;padding:0!important}
+}
+@media(prefers-reduced-motion:reduce){.product-modal-shell{animation:none}.omega-product-card,.omega-affordability-card{transition:none!important}}
+</style>
+<script>
+/* Press "/" anywhere to jump to search (desktop shortcut). */
+document.addEventListener('keydown',function(e){
+  var t=e.target&&e.target.tagName;
+  if(e.key==='/'&&t!=='INPUT'&&t!=='TEXTAREA'&&t!=='SELECT'){
+    var i=document.querySelector('.omega-header-search input');
+    if(i&&i.offsetParent){e.preventDefault();i.focus();}
+  }
+});
+</script>
+<style id="omega-header-offset-fix">
+/* The header + filter bar sit in a fixed container, so page content must start below it. */
+body main{padding-top:calc(var(--oz-head-h,150px) + 16px)!important}
+@media(min-width:1024px){
+  .header-container{left:var(--oz-side,236px)!important;width:auto!important;right:0!important}
+}
+/* Same gap under the header on every page: the measured header offset is the only spacer. */
+.oz-spacer-off{display:none!important}
+body main{padding-top:calc(var(--oz-head-h,150px) + 24px)!important}
+.omega-affordability-shell{padding-top:0!important}
+.omega-product-shell .omega-section-heading{margin-top:0!important}
+.omega-product-grid>:first-child,.omega-affordability-grid>:first-child{margin-top:0!important}
+</style>
+<script>
+(function(){
+  var h=document.querySelector('.header-container'); if(!h) return;
+  function set(){ document.documentElement.style.setProperty('--oz-head-h', h.offsetHeight+'px'); }
+  set();
+  if(window.ResizeObserver) new ResizeObserver(set).observe(h);
+  window.addEventListener('resize',set); window.addEventListener('load',set);
+})();
+</script>
+<style id="omega-liquid-glass">
+/* Liquid Glass: translucent, blurred, refracting surfaces with a bright specular rim. */
+:root{
+  --oz-surface:rgba(255,255,255,.52); --oz-line:rgba(255,255,255,.65); --oz-bg:rgba(255,255,255,.38);
+  --oz-brand:#0a6cff; --oz-brand-soft:rgba(10,108,255,.14); --oz-text:#0c1424; --oz-muted:#506179;
+  --oz-r-card:26px; --oz-r-ctl:16px;
+  --g-blur:blur(22px) saturate(185%); --g-blur-lite:blur(14px) saturate(160%);
+  --g-rim:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.35);
+  --g-drop:0 12px 36px -12px rgba(30,60,120,.28),0 2px 6px rgba(30,60,120,.08);
+  --g-sheen:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.08) 55%,rgba(255,255,255,.22));
+  --oz-shadow:var(--g-rim),var(--g-drop); --oz-shadow-up:var(--g-rim),0 22px 46px -14px rgba(10,108,255,.34);
+}
+.dark{
+  --oz-surface:rgba(30,40,62,.46); --oz-line:rgba(255,255,255,.14); --oz-bg:rgba(255,255,255,.07);
+  --oz-brand:#5aa8ff; --oz-brand-soft:rgba(90,168,255,.20); --oz-text:#f1f5fc; --oz-muted:#a3b3ca;
+  --g-rim:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.04),inset 0 0 0 1px rgba(255,255,255,.07);
+  --g-drop:0 14px 38px -12px rgba(0,0,0,.65);
+  --g-sheen:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.02) 55%,rgba(255,255,255,.07));
+  --oz-shadow:var(--g-rim),var(--g-drop); --oz-shadow-up:var(--g-rim),0 22px 46px -14px rgba(90,168,255,.38);
+}
+/* Colour behind the glass is what makes it read as glass */
+body{background-attachment:fixed!important;
+ background-image:radial-gradient(60% 50% at 8% 6%,rgba(80,150,255,.55),transparent 62%),radial-gradient(50% 45% at 94% 12%,rgba(180,120,255,.40),transparent 62%),radial-gradient(55% 50% at 80% 96%,rgba(60,210,200,.40),transparent 62%),linear-gradient(160deg,#eaf1ff,#f4f0ff 55%,#e8f6f6)!important}
+.dark body,body.dark{
+ background-image:radial-gradient(60% 50% at 8% 6%,rgba(40,100,230,.55),transparent 62%),radial-gradient(50% 45% at 94% 12%,rgba(120,70,220,.42),transparent 62%),radial-gradient(55% 50% at 80% 96%,rgba(20,150,160,.34),transparent 62%),linear-gradient(160deg,#060a14,#0b1020 55%,#07121a)!important}
+
+/* Shared glass recipe */
+.header-container,body nav.fixed.z-50,.product-modal-shell,.omega-product-toolbar,
+.omega-product-card,.omega-affordability-card,.glass-card,.omega-oct-offer-notice{
+  -webkit-backdrop-filter:var(--g-blur-lite);backdrop-filter:var(--g-blur-lite);
+  background-image:var(--g-sheen)!important;box-shadow:var(--oz-shadow)!important;border:1px solid var(--oz-line)!important}
+.header-container,body nav.fixed.z-50,.product-modal-shell{-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+.header-container{background-color:var(--oz-surface)!important;border-bottom:1px solid var(--oz-line)!important;border-radius:0 0 28px 28px;box-shadow:var(--g-rim),0 10px 30px -14px rgba(30,60,120,.3)!important}
+.header-container header,.header-container section,.omega-top-header,.glass-header{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.omega-product-card,.omega-affordability-card,.glass-card{background-color:var(--oz-surface)!important}
+.omega-product-card:before,.omega-affordability-card:before{background:none!important}
+.omega-product-card.selected{background-color:var(--oz-brand-soft)!important;border-color:var(--oz-brand)!important}
+.omega-product-image,.omega-aff-image{background:radial-gradient(70% 70% at 50% 62%,rgba(255,255,255,.55),rgba(255,255,255,.06))!important;border-radius:20px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.dark .omega-product-image,.dark .omega-aff-image{background:radial-gradient(70% 70% at 50% 62%,rgba(120,170,255,.16),rgba(255,255,255,.02))!important}
+@media(hover:hover){.omega-product-card:hover,.omega-affordability-card:hover{transform:translateY(-4px) scale(1.01)!important;background-color:color-mix(in srgb,var(--oz-surface) 80%,white)!important}}
+.omega-product-card:active,.omega-affordability-card:active{transform:scale(.985)!important}
+
+/* Controls: capsules and glass fields */
+.omega-series-pills button,.omega-variant-pills button,.filter-chip,.omega-card-compare-btn,.omega-card-more,.omega-series-badge,.omega-theme-btn,.omega-view-btn,.omega-primary-btn,.omega-secondary-btn,.omega-quotation-btn{border-radius:999px!important}
+.omega-series-pills button,.omega-variant-pills button,.filter-chip,.omega-card-compare-btn,.omega-card-more,.omega-theme-btn{background:var(--oz-bg)!important;border:1px solid var(--oz-line)!important;box-shadow:var(--g-rim);-webkit-backdrop-filter:var(--g-blur-lite);backdrop-filter:var(--g-blur-lite);color:var(--oz-text)}
+.omega-series-pills button.active,.omega-variant-pills button.active,.filter-chip-active,.omega-card-compare-btn.active{background:linear-gradient(180deg,color-mix(in srgb,var(--oz-brand) 92%,white),var(--oz-brand))!important;color:#fff!important;border-color:rgba(255,255,255,.45)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 20px -8px var(--oz-brand)!important}
+.omega-view-btn,.omega-primary-btn,.offer-btn{background:linear-gradient(180deg,color-mix(in srgb,var(--oz-brand) 90%,white),var(--oz-brand))!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 20px -8px var(--oz-brand)!important}
+select,input,textarea,.omega-header-search,.omega-filter-search{background:var(--oz-bg)!important;border:1px solid var(--oz-line)!important;border-radius:var(--oz-r-ctl)!important;box-shadow:inset 0 1px 2px rgba(20,40,80,.08),inset 0 1px 0 rgba(255,255,255,.4);color:var(--oz-text)}
+.omega-header-search input,.omega-filter-search input{background:transparent!important;border:0!important;box-shadow:none!important}
+.header-container input[type=text],.header-container select{border-radius:999px!important}
+
+/* Sidebar: floating glass panel (desktop) */
+@media(min-width:1024px){
+  body nav.fixed.z-50{left:12px!important;top:12px!important;bottom:12px!important;height:auto!important;width:calc(var(--oz-side) - 24px)!important;border-radius:30px!important;border:1px solid var(--oz-line)!important;background-color:var(--oz-surface)!important}
+  body nav.fixed.z-50 button{border-radius:999px!important}
+  body nav.fixed.z-50 button.bottom-nav-active{background:var(--oz-brand-soft)!important;box-shadow:var(--g-rim),0 6px 16px -8px var(--oz-brand)}
+  body nav.fixed.z-50 .nav-indicator{display:none}
+  .header-container{left:var(--oz-side,236px)!important}
+}
+/* Phone: floating glass capsule bar */
+@media(max-width:1023px){
+  body nav.fixed.z-50{border-radius:999px!important;background-color:var(--oz-surface)!important;left:14px!important;right:14px!important}
+  body nav.fixed.z-50 button.bottom-nav-active{background:var(--oz-brand-soft);border-radius:999px;margin:6px 4px;box-shadow:var(--g-rim)}
+  body nav.fixed.z-50 .nav-indicator{display:none}
+  .product-modal-shell{border-radius:30px 30px 0 0!important}
+  .header-container{border-radius:0 0 24px 24px}
+}
+
+/* Modals */
+.product-modal-overlay{background:rgba(10,20,40,.28)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.product-modal-shell{background-color:var(--oz-surface)!important;border-radius:32px!important}
+.product-modal-header{background:transparent!important;border-bottom:1px solid var(--oz-line)!important;color:var(--oz-text)!important}
+.product-modal-header *{color:inherit}
+.product-modal-tabs{background:var(--oz-bg)!important;border-radius:999px!important}
+.product-modal-tabs button{border-radius:999px!important}
+.omega-hero,.omega-affordability-hero{border-radius:32px!important}
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root{--oz-surface:rgba(255,255,255,.94)} .dark{--oz-surface:rgba(22,30,46,.96)}}
+@media(prefers-reduced-transparency:reduce){
+  :root{--oz-surface:rgba(255,255,255,.96)} .dark{--oz-surface:rgba(22,30,46,.97)}
+  *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
+</style>
 </body>
 </html>
