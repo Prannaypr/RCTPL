@@ -255,6 +255,9 @@
         html, body { width:100%; max-width:100%; overflow-x:hidden; }
         *, *::before, *::after { box-sizing:border-box; }
         pre, code { white-space:pre-wrap; word-break:break-word; }
+
+        .omega-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 16px); z-index: 99999; max-width: min(92vw, 440px); padding: 12px 18px; border-radius: 12px; background: #172033; color: #fff; box-shadow: 0 10px 35px rgba(0,0,0,.22); font-size: 14px; line-height: 1.45; text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+        .omega-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
     </style>
 
     <!-- Firebase Authentication -->
@@ -1783,7 +1786,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                 @click.stop="setProductModel(name)"
                 class="omega-card-more" aria-label="Open product">→</button>
         <button type="button"
-                @click.stop="(() => { const group = groupedModels.find(g => g.name === name); if (group) toggleCompare(getSelectedVariant(group)); else alert('Compare details are not available for this model yet.'); })()"
+                @click.stop="(() => { const group = groupedModels.find(g => g.name === name); if (group) toggleCompare(getSelectedVariant(group)); else window.showOmegaToast('Compare details are not available for this model yet.'); })()"
                 :class="(groupedModels.find(g => g.name === name) && isInCompare(getSelectedVariant(groupedModels.find(g => g.name === name)).id)) ? 'omega-card-compare-btn active' : 'omega-card-compare-btn'"
                 aria-label="Compare model">
           <span aria-hidden="true">⇄</span><span>Compare</span>
@@ -2617,7 +2620,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                         this.compareList.splice(idx, 1);
                     } else {
                         if (this.compareList.length >= 3) {
-                            alert("You can compare up to 3 models.");
+                            window.showOmegaToast("You can compare up to 3 models.");
                             return;
                         }
                         this.compareList.push(model);
@@ -17903,8 +17906,8 @@ offerHighlights: {
                             const copied = document.execCommand('copy'); field.remove(); if (!copied) throw new Error('Copy unavailable');
                         }
                         this.showQuotationBuilder = false;
-                        alert('🧾 Selected quotation copied. Paste it into WhatsApp to share.');
-                    } catch (error) { window.prompt('Copy this quotation:', quotation); }
+                        window.showOmegaToast('🧾 Quotation copied. Paste it into WhatsApp to share.');
+                    } catch (error) { window.showOmegaToast('Unable to copy automatically. Please check browser clipboard permissions and try again.'); }
                 },
                 confirmQuotationCopy() {
                     const model = this.quotationModel();
@@ -18517,5 +18520,11 @@ select,input,textarea,.omega-header-search,.omega-filter-search{background:var(-
   :root{--oz-surface:rgba(255,255,255,.96)} .dark{--oz-surface:rgba(22,30,46,.97)}
   *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
 </style>
+
+    <div id="omegaToast" class="omega-toast" role="status" aria-live="polite"></div>
+    <script>
+      (() => { let toastTimer; window.showOmegaToast = (message) => { const toast = document.getElementById('omegaToast'); if (!toast) return; toast.textContent = String(message || ''); toast.classList.add('is-visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2800); }; })();
+    </script>
+
 </body>
 </html>
