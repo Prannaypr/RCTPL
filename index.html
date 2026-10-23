@@ -1367,7 +1367,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
 
             <div x-show="!authReady" class="py-8 text-center">
                 <div class="mx-auto h-8 w-8 rounded-full border-2 border-blue-400 border-t-transparent animate-spin"></div>
-                <p class="text-xs text-slate-400 mt-4">Checking secure session...</p>
+                <p class="text-xs text-slate-400 mt-4">Loading...</p>
             </div>
 
             <template x-if="authReady && !isLoggedIn">
@@ -1485,7 +1485,6 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                 </div>
             </template>
 
-            <p class="text-center text-[9px] text-slate-500 mt-6">Secure access powered by Firebase Authentication.</p>
         </div>
     </div>
 
