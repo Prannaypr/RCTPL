@@ -1735,18 +1735,6 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
               <small>MIN SWIPE</small>
               <strong x-text="typeof getSelectedVariant(group).minSwipe === 'number' ? '₹' + getSelectedVariant(group).minSwipe.toLocaleString('en-IN') : getSelectedVariant(group).minSwipe"></strong>
             </div>
-            <div>
-              <small>EMI CASHBACK</small>
-              <strong x-text="getSelectedVariant(group).ccEmiCashback || 'NA'"></strong>
-            </div>
-            <div>
-              <small>FULL SWIPE CASHBACK</small>
-              <strong x-text="getSelectedVariant(group).ccFullswipeCashback || 'NA'"></strong>
-            </div>
-            <div>
-              <small>UPI CASHBACK</small>
-              <strong x-text="getSelectedVariant(group).upiCashback || 'NA'"></strong>
-            </div>
           </div>
 
           <div class="omega-card-action-row">
@@ -2028,18 +2016,6 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
 
             <div class="product-modal-body p-6 space-y-6 text-xs">
                 <div class="product-modal-tabs flex border-b border-slate-200 overflow-x-auto space-x-2 dark:border-slate-800">
-                    <button x-show="selectedModel?.series !== 'Extender Kit'" @click="activeTab = 'paper-finance'" :class="activeTab === 'paper-finance' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">
-                        📄 Paper Finance
-                    </button>
-                    <button @click="activeTab = 'cc-emi'" :class="activeTab === 'cc-emi' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">
-                        💳 Credit Card EMI
-                    </button>
-                    <button @click="activeTab = 'fullswipe'" :class="activeTab === 'fullswipe' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">
-                        ⚡ Full Swipe
-                    </button>
-                    <button @click="activeTab = 'upi'" :class="activeTab === 'upi' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">
-                        📲 UPI
-                    </button>
                     <button x-show="selectedModel?.series !== 'Extender Kit'" @click="activeTab = 'vshield'" :class="activeTab === 'vshield' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">
                         🛡️ V-Shield
                     </button>
@@ -2048,133 +2024,6 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                     </button>
                 </div>
 
-                <div x-show="activeTab === 'paper-finance' && selectedModel?.series !== 'Extender Kit'" class="space-y-5">
-                    <div class="bg-gradient-to-r from-blue-50 to-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-2 md:grid-cols-3 gap-4 dark:from-black/40 dark:to-black/10 dark:border-white/5">
-                        <div>
-                            <span class="text-slate-400 block text-[10px] uppercase font-semibold">Market Price (MOP)</span>
-                            <span class="text-base font-extrabold text-slate-900 dark:text-white" x-text="'₹' + selectedModel?.mop.toLocaleString('en-IN')"></span>
-                        </div>
-                        <div class="md:col-span-2">
-                            <span class="text-slate-400 block text-[10px] uppercase font-semibold">Official Bajaj Schemes (Tenure | Advance)</span>
-                            <div class="flex flex-wrap gap-1 mt-1 max-h-16 overflow-y-auto">
-                                <template x-for="sch in (selectedModel?.bajajSchemes || [])" :key="sch">
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-black/60 dark:text-blue-200" x-text="sch"></span>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1.5 text-xs dark:text-slate-300">Select Paper Finance NBFC Partner:</label>
-                            <select x-model="calcPartner" @change="onPartnerChange()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 cursor-pointer font-medium dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                                <option value="Bajaj Finance">Bajaj Finance (Official Rate Card)</option>
-                                <option value="IDFC First Bank">IDFC First Bank Consumer Loan</option>
-                                <option value="DMI Finance">DMI Finance</option>
-                                <option value="HDB Financial Services">HDB Financial Services</option>
-                                <option value="TVS Credit">TVS Credit Services</option>
-                                <option value="ICICI Bank">ICICI Bank</option>
-                                <option value="Chola">Chola (Cholamandalam)</option>
-                                <option value="Poonawalla">Poonawalla Fincorp</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1.5 text-xs dark:text-slate-300">Select Rate Card Scheme (Tenure / Advance EMIs):</label>
-                            <select x-model="calcScheme" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 cursor-pointer font-medium dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                                <template x-for="opt in availableSchemes" :key="opt.val">
-                                    <option :value="opt.val" x-text="opt.label"></option>
-                                </template>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Scheme Structure Info Box -->
-                    <div class="bg-blue-50/70 border border-blue-200 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 dark:bg-black/20 dark:border-blue-800">
-                        <div>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 uppercase tracking-wider dark:bg-black/40 dark:text-blue-300">Scheme Structure Rule</span>
-                            <h4 class="font-bold text-slate-900 text-sm mt-1 dark:text-white" x-text="calcAdvanceEmis === 0 ? 'Zero Advance / Down Payment Plan' : calcAdvanceEmis + ' Advance EMIs Required by NBFC'"></h4>
-                            <p class="text-[11px] text-slate-600 mt-0.5 dark:text-slate-400">Calculated automatically based on official October 2026 Master Rate Card format (Tenure | Advance EMIs).</p>
-                        </div>
-                        <div class="text-right sm:text-right w-full sm:w-auto bg-white p-3 rounded-lg border border-blue-100 shadow-sm dark:bg-slate-700 dark:border-blue-900">
-                            <span class="text-[10px] text-slate-400 block uppercase font-semibold">Advance Down Payment</span>
-                            <span class="text-base font-extrabold text-blue-700 dark:text-blue-400" x-text="'₹' + advanceDownPayment.toLocaleString('en-IN')"></span>
-                        </div>
-                    </div>
-
-                    <!-- IDFC Special Footer Notes -->
-                    <div x-show="calcPartner === 'IDFC First Bank'" class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-[11px] text-amber-900 space-y-1 dark:bg-amber-900/10 dark:border-amber-500/20 dark:text-amber-200">
-                        <p>💡 <strong>IDFC First Bank Master Notes:</strong></p>
-                        <p>• 10|0 & 12|0 schemes available with LC EMI option. Please connect with sales representative for details.</p>
-                        <p>• 1 year EW available on 6|0, 8|0 & 10|0 schemes with ₹699 & ₹999 PF. Please connect with sales representative for details.</p>
-                    </div>
-
-                    <!-- Paper Finance Result Card -->
-                    <div class="finance-result-card vivo-blue text-white rounded-2xl p-5 space-y-4 shadow-md dark:bg-black">
-                        <div class="flex justify-between items-center border-b border-blue-400/30 pb-3 dark:border-slate-700">
-                            <h4 class="font-extrabold text-sm tracking-wide flex items-center space-x-2">
-                                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                <span x-text="calcPartner + ' • Scheme Format (' + calcScheme + ') Plan'"></span>
-                            </h4>
-                            <span class="bg-white/20 text-white text-[10px] px-2.5 py-1 rounded-full font-bold">NBFC Verified</span>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                            <div class="bg-white/10 p-3 rounded-xl  dark:bg-slate-950">
-                                <span class="text-blue-200 block text-[10px] dark:text-blue-400">Net Loan Amount</span>
-                                <span class="font-extrabold text-white text-base mt-0.5 block" x-text="'₹' + netLoanAmount.toLocaleString('en-IN')"></span>
-                            </div>
-                            <div class="bg-white/10 p-3 rounded-xl  dark:bg-slate-950">
-                                <span class="text-blue-200 block text-[10px] dark:text-blue-400">Tenure / Advance</span>
-                                <span class="font-extrabold text-white text-base mt-0.5 block" x-text="calcTenure + ' Mos (' + calcAdvanceEmis + ' Adv)'"></span>
-                            </div>
-                            <div class="bg-amber-400 text-slate-900 p-3 rounded-xl shadow-sm dark:bg-amber-500">
-                                <span class="text-slate-800 font-semibold block text-[10px]">Monthly EMI</span>
-                                <span class="font-black text-slate-900 text-lg mt-0.5 block" x-text="'₹' + monthlyEmi.toLocaleString('en-IN')"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div x-show="activeTab === 'cc-emi'" class="space-y-4">
-                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-blue-900 dark:bg-black/20 dark:border-blue-800 dark:text-blue-300">
-                        <h4 class="font-bold text-sm">CC EMI Cashback</h4>
-                        <p class="text-[11px] text-blue-800 leading-relaxed dark:text-blue-400">Credit Card EMI cashback for the selected model.</p>
-                    </div>
-                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm dark:bg-black/50 dark:border-slate-700">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider dark:text-slate-400">CC EMI Cashback</span>
-                        <p class="text-2xl font-black text-blue-700 mt-2 dark:text-blue-400" x-text="selectedModel?.ccEmiCashback || 'NA'"></p>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-blue-100 shadow-sm dark:bg-black/30 dark:border-slate-700">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider dark:text-slate-400">Eligible Credit Cards / Banks for EMI</span>
-                        <p class="text-sm font-bold text-slate-800 mt-2 leading-relaxed dark:text-slate-200 whitespace-normal" x-text="selectedModel?.banksEmi || 'NA'"></p>
-                    </div>
-                </div>
-
-                <div x-show="activeTab === 'fullswipe'" class="space-y-4">
-                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-emerald-900 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300">
-                        <h4 class="font-bold text-sm">CC Full Swipe Cashback</h4>
-                        <p class="text-[11px] text-emerald-800 leading-relaxed dark:text-emerald-400">Full Swipe cashback for the selected model.</p>
-                    </div>
-                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm dark:bg-black/50 dark:border-slate-700">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider dark:text-slate-400">CC Full Swipe Cashback</span>
-                        <p class="text-2xl font-black text-emerald-700 mt-2 dark:text-emerald-400" x-text="selectedModel?.ccFullswipeCashback || 'NA'"></p>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-emerald-100 shadow-sm dark:bg-black/30 dark:border-slate-700">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider dark:text-slate-400">Eligible Credit Cards / Banks for Full Swipe</span>
-                        <p class="text-sm font-bold text-slate-800 mt-2 leading-relaxed dark:text-slate-200 whitespace-normal" x-text="selectedModel?.banksFullswipe || 'NA'"></p>
-                    </div>
-                </div>
-
-                <div x-show="activeTab === 'upi'" class="space-y-4">
-                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-blue-900 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300">
-                        <h4 class="font-bold text-sm">UPI Cashback</h4>
-                        <p class="text-[11px] text-blue-800 leading-relaxed dark:text-blue-400">UPI cashback is shown only where it is mentioned in the October 2026 rate card.</p>
-                    </div>
-                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm dark:bg-black/50 dark:border-slate-700">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider dark:text-slate-400">UPI Cashback</span>
-                        <p class="text-2xl font-black text-blue-700 mt-2 dark:text-blue-400" x-text="(selectedModel?.upiCashback && selectedModel.upiCashback !== 'NA') ? selectedModel.upiCashback : 'NA'"></p>
-                    </div>
-                </div>
 
                 <!-- V-Shield Content -->
                 <div x-show="activeTab === 'vshield'" class="space-y-4">
@@ -2404,7 +2253,7 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                 quotationOfferOptions: [],
                 quotationSelectedOffers: [],
                 variantSelections: {},
-                activeTab: 'paper-finance',
+                activeTab: 'vshield',
                 calcPartner: 'Bajaj Finance',
                 calcScheme: '24|0',
                 showPartnerModal: false,
@@ -3287,49 +3136,54 @@ body:not(.dark) .product-modal-header button{color:#0f172a !important}
                 // October 2026 affordability highlights transcribed from the new Festival Offers Oct 2026 PDF.
 offerHighlights: {
                     'X Fold6': {
-                        card: 'Up to 12% instant cashback on eligible CCEMI / Full Swipe / UPI transactions; check model and eligible bank rows in the new Oct 2026 rate card.',
-                        paper: 'See the new offer deck for partner-specific schemes and eligibility.',
-                        bajaj: 'See the new offer deck for partner-specific schemes and eligibility.'
+                        card: '12% instant cashback on eligible CCEMI / Full Swipe / UPI; maximum UPI cashback ₹26,400. Model: 12+512GB, MOP ₹2,19,999, minimum swipe ₹99,999.',
+                        paper: 'Finance schemes are partner-specific; use the selected finance partner and X Fold6 12+512GB rate card.',
+                        bajaj: 'Bajaj Finance schemes are listed in the X Fold6 offer deck. V-Shield 40% discount on 1-year SDP & EW plan with DMI Finance.'
                     },
                     'X300 Ultra': {
-                        card: '9M NCEMI + 10% cashback option; separate 15% cashback variant is listed in the PDF. Eligible Full Swipe / UPI cashback is model-specific.',
-                        paper: 'EMI up to 30 months • Down Payment ₹0 • Monthly EMI ₹5,333 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI up to 30 months • Down Payment ₹0 • Monthly EMI ₹5,333 (lowest-variant highlight in PDF).'
+                        card: 'Separate offers: 16+512GB (MOP ₹1,59,999) — 24M NCEMI; 9M NCEMI + 10% CCEMI cashback; or 15% cashback offer with CIB / Full Swipe / UPI. Photography Kit (MOP ₹2,09,999) has the same three offer types. The 15% cashback option gives UPI cashback ₹15,000 without Photography Kit and ₹20,000 with Photography Kit.',
+                        paper: 'Finance tenure and cashback depend on the selected X300 Ultra offer variant. 24M NCEMI option: 12m / 18m / 24m NCE. 9M NCEMI + 10% CB option: 3m / 6m / 9m NCE. Check the selected offer variant before quoting.',
+                        bajaj: 'Partner-specific finance schemes are available by selected X300 Ultra offer variant. Do not combine the 24M NCEMI, 9M NCEMI + 10% cashback, and 15% cashback offers.'
                     },
-                    'X300 FE Series': {
-                        card: 'Up to 12% cashback or up to 24M NCE / up to 12% exchange bonus, depending on model and transaction type.',
-                        paper: 'EMI up to 20 months • Down Payment ₹0 • Monthly EMI ₹4,500 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI 18 months • Down Payment ₹0 • Monthly EMI ₹5,000 (lowest-variant highlight in PDF).'
+                    'X300 FE': {
+                        card: '12+512GB: MOP ₹99,999 / min swipe ₹69,999; 12+256GB: ₹94,999 / ₹59,999; 8+256GB: ₹89,999 / ₹54,999. Each variant offers NCE-only, NCE + 10% cashback, or cashback-only options as listed in the Oct 2026 bank scheme.',
+                        paper: 'Partner-specific finance schemes vary by selected X300 FE RAM/ROM variant.',
+                        bajaj: 'Partner-specific Bajaj Finance schemes vary by selected X300 FE RAM/ROM variant.'
+                    },
+                    'V80': {
+                        card: '10% cashback on eligible EMI / Full Swipe / UPI transactions. 8+128GB: MOP ₹62,999, minimum swipe ₹42,999; 8+256GB: ₹69,999 / ₹49,999; 8+512GB: ₹79,999 / ₹59,999.',
+                        paper: 'Use the selected V80 variant and finance partner to view official schemes. V-Shield plan available with finance schemes.',
+                        bajaj: 'Bajaj Finance schemes are listed for V80 8+128GB, 8+256GB and 8+512GB. DMI Finance includes 6, 7, 8, 9, 12, 15 and 18-month schemes; 10, 11, 13 and 16-month LCEMI tenures are also noted.'
                     },
                     'V70 Elite': {
-                        card: 'Up to ₹7,200 instant cashback on eligible UPI and brand Full Swipe transactions with selected credit cards; 1-year free EW on eligible V70 series transactions.',
-                        paper: 'See the new offer deck for partner-specific schemes.',
-                        bajaj: 'See the new offer deck for partner-specific schemes.'
+                        card: 'V70 Elite: 10% CCEMI cashback up to ₹5,000 and ₹3,000 Full Swipe / UPI cashback on eligible transactions. V70 / V70 Elite: 1-year free extended warranty on eligible brand Full Swipe and UPI transactions. Offer valid till 31 Oct 2026.',
+                        paper: 'Partner-specific finance schemes vary by selected model and RAM/ROM variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     },
-                    'V70 FE Series': {
-                        card: 'Up to 10% cashback on eligible CCEMI / Full Swipe / UPI, or up to 6M NCE / up to 10% exchange bonus.',
-                        paper: 'EMI up to 15 months • Down Payment ₹0 • Monthly EMI ₹3,000 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI up to 15 months • Down Payment ₹0 • Monthly EMI ₹3,000 (lowest-variant highlight in PDF).'
+                    'V70': {
+                        card: '10% CCEMI cashback up to ₹4,000 and ₹2,000 Full Swipe / UPI cashback on eligible transactions. 1-year free extended warranty on eligible brand Full Swipe and UPI transactions. Offer valid till 31 Oct 2026.',
+                        paper: 'Partner-specific finance schemes vary by selected model and RAM/ROM variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     },
-                    'S2 Series': {
-                        card: 'Up to 10% cashback on eligible CCEMI / Full Swipe / UPI, or up to 6M NCE / up to 10% exchange bonus.',
-                        paper: 'EMI up to 10 months • Down Payment ₹0 • Monthly EMI ₹4,300 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI up to 10 months • Down Payment ₹0 • Monthly EMI ₹4,300 (lowest-variant highlight in PDF).'
+                    'V70 FE': {
+                        card: '10% cashback on eligible CCEMI / Full Swipe / UPI transactions; NCE and exchange offers depend on variant.',
+                        paper: 'Partner-specific finance schemes vary by selected V70 FE variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     },
-                    'Y51 Pro Series': {
-                        card: '10% CCEMI cashback up to ₹2,500; Full Swipe cashback ₹1,500; 3M NCE listed.',
-                        paper: 'EMI up to 8 months • Down Payment ₹0 • Monthly EMI ₹4,375 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI up to 8 months • Down Payment ₹0 • Monthly EMI ₹4,375 (lowest-variant highlight in PDF).'
+                    'S2': {
+                        card: '10% CCEMI cashback up to ₹3,000; Full Swipe / UPI cashback up to ₹1,500; up to 6M NCE or exchange bonus up to ₹3,000 as listed in the overview.',
+                        paper: 'Partner-specific finance schemes vary by selected S2 variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     },
-                    'Y21 Series': {
-                        card: '10% CCEMI cashback up to ₹1,500; Full Swipe cashback ₹1,000 on eligible variants; 3M NCE listed.',
-                        paper: 'EMI up to 7 months • Down Payment ₹0 • Monthly EMI ₹3,000 (lowest-variant highlight in PDF).',
-                        bajaj: 'EMI 6|0 • Down Payment ₹0 • Monthly EMI ₹3,500 (lowest-variant highlight in PDF).'
+                    'Y51 Pro': {
+                        card: '10% CCEMI cashback up to ₹2,000 and 3M NCE, or exchange bonus as listed in the monthly overview.',
+                        paper: 'Partner-specific finance schemes vary by selected Y51 Pro variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     },
-                    'Y19s 5G': {
-                        card: 'Bank cashback and minimum-swipe values vary by RAM/ROM variant; refer to the new bank scheme tables.',
-                        paper: 'V-Shield discounted DMI EMI plan starts at ₹558 for Y19s 5G (6+128GB) only; offer valid until 15 Nov 2026.',
-                        bajaj: 'V-Shield discounted DMI EMI plan is specified for DMI EMI finance only.'
+                    'Y21': {
+                        card: '₹1,000 CCEMI cashback and 3M NCE as listed in the monthly overview; confirm eligible variant and transaction type.',
+                        paper: 'Partner-specific finance schemes vary by selected Y21 variant.',
+                        bajaj: 'Check the selected model and partner-specific finance scheme before quoting.'
                     }
                 },
                 seriesOptions: ['Foldable', 'X Series', 'V Series', 'S Series', 'Y Series', 'T Series', 'Extender Kit'],
@@ -3875,9 +3729,9 @@ offerHighlights: {
     "ccNce": "3m, 6m, 9m",
     "ccLce": "NA",
     "ccEmiCashback": "10%",
-    "ccFullswipeCashback": "10%",
+    "ccFullswipeCashback": "NA",
     "banksEmi": "IDFC, DBS, SBI, Yes, HDFC, Kotak, Axis, OneCard",
-    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis",
+    "banksFullswipe": "NA",
     "bajajSchemes": [
       "30|0",
       "24|0",
@@ -4069,8 +3923,8 @@ offerHighlights: {
       "7|0",
       "6|0"
     ],
-    "upiCashback": "10%",
-    "banksUpi": "UPI Eligible",
+    "upiCashback": "NA",
+    "banksUpi": "Not Eligible",
     "homeCreditSchemes": [
       "30|0",
       "24|0",
@@ -4112,7 +3966,7 @@ offerHighlights: {
     "ccEmiCashback": "10%",
     "ccFullswipeCashback": "10%",
     "banksEmi": "IDFC, DBS, SBI, Yes, HDFC, Kotak, Axis, OneCard",
-    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis",
+    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis, UPI",
     "bajajSchemes": [
       "30|0",
       "24|0",
@@ -4304,8 +4158,8 @@ offerHighlights: {
       "7|0",
       "6|0"
     ],
-    "upiCashback": "20000",
-    "banksUpi": "UPI Eligible",
+    "upiCashback": "₹20,000",
+    "banksUpi": "UPI eligible; cashback ₹20,000",
     "homeCreditSchemes": [
       "30|0",
       "24|0",
@@ -4580,9 +4434,9 @@ offerHighlights: {
     "ccNce": "3m, 6m, 9m",
     "ccLce": "NA",
     "ccEmiCashback": "10%",
-    "ccFullswipeCashback": "10%",
+    "ccFullswipeCashback": "NA",
     "banksEmi": "IDFC, DBS, SBI, Yes, HDFC, Kotak, Axis, OneCard",
-    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis",
+    "banksFullswipe": "NA",
     "bajajSchemes": [
       "30|0",
       "24|0",
@@ -4774,8 +4628,8 @@ offerHighlights: {
       "7|0",
       "6|0"
     ],
-    "upiCashback": "10%",
-    "banksUpi": "UPI Eligible",
+    "upiCashback": "NA",
+    "banksUpi": "Not Eligible",
     "homeCreditSchemes": [
       "30|0",
       "24|0",
@@ -4817,7 +4671,7 @@ offerHighlights: {
     "ccEmiCashback": "10%",
     "ccFullswipeCashback": "10%",
     "banksEmi": "IDFC, DBS, SBI, Yes, HDFC, Kotak, Axis, OneCard",
-    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis",
+    "banksFullswipe": "IDFC, DBS, SBI, Yes, Kotak, Axis, UPI",
     "bajajSchemes": [
       "30|0",
       "24|0",
@@ -5009,8 +4863,8 @@ offerHighlights: {
       "7|0",
       "6|0"
     ],
-    "upiCashback": "15000",
-    "banksUpi": "UPI Eligible",
+    "upiCashback": "₹15,000",
+    "banksUpi": "UPI eligible; cashback ₹15,000",
     "homeCreditSchemes": [
       "30|0",
       "24|0",
@@ -17124,7 +16978,15 @@ offerHighlights: {
       "8|2",
       "9|3"
     ],
-    "dmiSchemes": [],
+    "dmiSchemes": [
+      "6|0",
+      "7|0",
+      "8|0",
+      "9|0",
+      "12|0",
+      "15|0",
+      "18|0"
+    ],
     "upiCashback": "10%",
     "banksUpi": "UPI Eligible",
     "homeCreditSchemes": [
@@ -17153,7 +17015,9 @@ offerHighlights: {
       "8|1",
       "8|2",
       "9|3"
-    ]
+    ],
+    "dmiLceNote": "10m, 11m, 13m and 16m tenures available with LCEMI option.",
+    "vshieldFinanceNote": "40% discount on 1-year SDP & EW plan with DMI Finance."
   },
   {
     "id": 95,
@@ -17354,7 +17218,15 @@ offerHighlights: {
       "8|2",
       "9|3"
     ],
-    "dmiSchemes": [],
+    "dmiSchemes": [
+      "6|0",
+      "7|0",
+      "8|0",
+      "9|0",
+      "12|0",
+      "15|0",
+      "18|0"
+    ],
     "upiCashback": "10%",
     "banksUpi": "UPI Eligible",
     "homeCreditSchemes": [
@@ -17383,7 +17255,9 @@ offerHighlights: {
       "8|1",
       "8|2",
       "9|3"
-    ]
+    ],
+    "dmiLceNote": "10m, 11m, 13m and 16m tenures available with LCEMI option.",
+    "vshieldFinanceNote": "40% discount on 1-year SDP & EW plan with DMI Finance."
   },
   {
     "id": 96,
@@ -17584,7 +17458,15 @@ offerHighlights: {
       "8|2",
       "9|3"
     ],
-    "dmiSchemes": [],
+    "dmiSchemes": [
+      "6|0",
+      "7|0",
+      "8|0",
+      "9|0",
+      "12|0",
+      "15|0",
+      "18|0"
+    ],
     "upiCashback": "10%",
     "banksUpi": "UPI Eligible",
     "homeCreditSchemes": [
@@ -17613,7 +17495,9 @@ offerHighlights: {
       "8|1",
       "8|2",
       "9|3"
-    ]
+    ],
+    "dmiLceNote": "10m, 11m, 13m and 16m tenures available with LCEMI option.",
+    "vshieldFinanceNote": "40% discount on 1-year SDP & EW plan with DMI Finance."
   },
   {
     "id": 97,
@@ -17793,7 +17677,17 @@ offerHighlights: {
       "8|2",
       "9|3"
     ],
-    "dmiSchemes": [],
+    "dmiSchemes": [
+      "6|0",
+      "7|0",
+      "8|0",
+      "9|0",
+      "12|0",
+      "15|0",
+      "18|0",
+      "24|0",
+      "30|0"
+    ],
     "upiCashback": "12%",
     "banksUpi": "UPI Eligible",
     "homeCreditSchemes": [
@@ -17818,7 +17712,9 @@ offerHighlights: {
       "8|1",
       "8|2",
       "9|3"
-    ]
+    ],
+    "dmiLceNote": "10m, 11m, 13m and 16m tenures available with LCEMI option.",
+    "vshieldFinanceNote": "40% discount on 1-year SDP & EW plan with DMI Finance."
   }
 ],
 
@@ -18118,8 +18014,8 @@ offerHighlights: {
                                 </div>
                             </div>
 
-                            <div>
-                                <span class="text-[8px] text-slate-400 block uppercase font-black tracking-widest mb-1">Bajaj Schemes</span>
+                            <div x-show="model.name.includes('X300 Ultra') || model.id === models.filter(m => m.name === model.name).sort((a,b) => a.mop - b.mop)[0]?.id">
+                                <span class="text-[8px] text-slate-400 block uppercase font-black tracking-widest mb-1">Bajaj Schemes · Lowest variant</span>
                                 <div class="flex flex-wrap gap-1">
                                     <template x-for="sch in (model.bajajSchemes || [])" :key="sch">
                                         <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-black dark:text-blue-300" x-text="sch"></span>
