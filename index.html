@@ -1405,6 +1405,26 @@ nav.fixed.bottom-\\[calc\\(16px\\+env\\(safe-area-inset-bottom\\)\\)\\]{
 }
 </style>
 
+
+<!-- Conservative layout safety fixes: preserve original Omega Zone styling -->
+<style id="omega-safe-layout-fixes">
+  *, *::before, *::after { box-sizing: border-box; }
+  html { max-width: 100%; overflow-x: clip; }
+  body { max-width: 100%; overflow-x: clip; }
+  img, video, canvas, svg { max-width: 100%; }
+  /* Long offer text and tables should scroll inside their own panel, not push the page wider. */
+  #omegaOfferLibrary { min-width: 0; max-width: 100%; }
+  #omegaOfferLibrary table { max-width: 100%; }
+  /* Keep modal dimensions inside the viewport without changing its visual design. */
+  .product-modal-overlay { box-sizing: border-box; }
+  .product-modal-shell { box-sizing: border-box; max-width: calc(100vw - 24px); }
+  @media (max-width: 640px) {
+    .product-modal-shell { max-width: calc(100vw - 12px); }
+    .product-modal-body { min-width: 0; }
+    #omegaOfferLibrary table { display: block; overflow-x: auto; }
+  }
+</style>
+
 </head>
 <body x-data="rateCardApp()"
       :class="darkMode ? 'dark bg-black text-slate-100' : 'bg-[#F2F5F9] text-slate-900'"
@@ -2097,7 +2117,7 @@ nav.fixed.bottom-\\[calc\\(16px\\+env\\(safe-area-inset-bottom\\)\\)\\]{
 
             <div class="product-modal-body p-6 space-y-6 text-xs">
                 <div class="product-modal-tabs flex border-b border-slate-200 overflow-x-auto space-x-2 dark:border-slate-800">
-                    <button @click="activeTab = 'offers'" :class="activeTab === 'offers' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">💳 Card Offers</button>
+                    <button @click="activeTab = 'offers'" :class="activeTab === 'offers' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">💳 Card Offers &amp; UPI</button>
                     <button @click="activeTab = 'finance'" :class="activeTab === 'finance' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">🏦 Finance Schemes</button>
                     <button x-show="selectedModel?.series !== 'Extender Kit'" @click="activeTab = 'vshield'" :class="activeTab === 'vshield' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">🛡️ V-Shield</button>
                     <button @click="activeTab = 'terms'" :class="activeTab === 'terms' ? 'border-b-2 border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-lg dark:bg-blue-500/10' : 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300'" class="pb-2.5 px-3 text-xs whitespace-nowrap transition">📋 Terms</button>
@@ -2126,15 +2146,37 @@ nav.fixed.bottom-\\[calc\\(16px\\+env\\(safe-area-inset-bottom\\)\\)\\]{
                 <div x-show="activeTab === 'finance'" class="space-y-4">
                     <div class="rounded-xl border border-slate-200 p-4 dark:border-slate-700">
                         <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Finance Partner</label>
-                        <select x-model="calcPartner" class="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm font-bold text-slate-900 dark:bg-slate-900 dark:border-slate-700 dark:text-white">
+                        <select x-model="calcPartner" @change="onPartnerChange()" class="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm font-bold text-slate-900 dark:bg-slate-900 dark:border-slate-700 dark:text-white">
                             <option>Bajaj Finance</option><option>IDFC First Bank</option><option>TVS Credit</option><option>Home Credit</option><option>DMI Finance</option><option>HDB Financial Services</option><option>ICICI Bank</option><option>Poonawalla</option><option>Chola</option>
                         </select>
                         <p class="text-[11px] text-slate-500 mt-2" x-text="selectedModel?.dmiLceNote && calcPartner === 'DMI Finance' ? selectedModel.dmiLceNote : (selectedModel?.vshieldFinanceNote || 'Schemes depend on selected variant and finance partner.')"></p>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" x-show="availableSchemes.length">
-                        <template x-for="scheme in availableSchemes" :key="scheme.val"><div class="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:bg-slate-900 dark:border-slate-700"><div class="text-[10px] text-slate-500">Scheme</div><div class="text-sm font-black text-slate-900 dark:text-white" x-text="scheme.label"></div></div></template>
+                    <div x-show="availableSchemes.length" class="space-y-3">
+                        <div class="text-[10px] font-black uppercase tracking-widest text-slate-500">Select a finance offer to calculate</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <template x-for="scheme in availableSchemes" :key="scheme.val">
+                                <button type="button" @click="calcScheme = scheme.val" :aria-pressed="calcScheme === scheme.val" :class="calcScheme === scheme.val ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-400' : 'border-slate-200 bg-slate-50 hover:border-blue-300 dark:bg-slate-900 dark:border-slate-700'" class="w-full text-left rounded-xl border p-3 transition">
+                                    <span class="block text-[10px] font-bold text-slate-500">Finance offer</span>
+                                    <span class="block text-sm font-black text-slate-900 dark:text-white mt-1" x-text="scheme.label"></span>
+                                    <span class="inline-block mt-2 rounded-full px-2 py-1 text-[9px] font-black" :class="calcScheme === scheme.val ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300'" x-text="calcScheme === scheme.val ? 'SELECTED' : 'TAP TO SELECT'"></span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
-                    <div x-show="!availableSchemes.length" class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 dark:bg-amber-950/20 dark:border-amber-900 dark:text-amber-100">No partner-specific scheme is listed for this model variant in the embedded rate card. Please verify with the partner's current PoS rate card before quoting.</div>
+                    <div x-show="availableSchemes.length && calcScheme" class="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4 dark:border-blue-900 dark:from-blue-950/40 dark:to-slate-900">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div><div class="text-[10px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-300">Selected offer calculation</div><div class="text-sm font-black text-slate-900 dark:text-white mt-1" x-text="calcPartner + ' · ' + calcTenure + ' months' "></div></div>
+                            <span class="rounded-full bg-blue-600 text-white px-2.5 py-1 text-[9px] font-black" x-text="calcAdvanceEmis + ' advance EMI' + (calcAdvanceEmis === 1 ? '' : 's')"></span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+                            <div class="rounded-xl bg-white/90 border border-slate-200 p-3 dark:bg-slate-950 dark:border-slate-700"><div class="text-[9px] font-bold uppercase text-slate-500">Device MOP</div><div class="text-base font-black text-slate-900 dark:text-white mt-1" x-text="'₹' + Number(selectedModel?.mop || 0).toLocaleString('en-IN')"></div></div>
+                            <div class="rounded-xl bg-white/90 border border-slate-200 p-3 dark:bg-slate-950 dark:border-slate-700"><div class="text-[9px] font-bold uppercase text-slate-500">Indicative EMI</div><div class="text-base font-black text-blue-700 dark:text-blue-300 mt-1" x-text="'₹' + monthlyEmi.toLocaleString('en-IN') + '/mo'"></div></div>
+                            <div class="rounded-xl bg-white/90 border border-slate-200 p-3 dark:bg-slate-950 dark:border-slate-700"><div class="text-[9px] font-bold uppercase text-slate-500">Advance amount</div><div class="text-base font-black text-slate-900 dark:text-white mt-1" x-text="'₹' + advanceDownPayment.toLocaleString('en-IN')"></div></div>
+                            <div class="rounded-xl bg-white/90 border border-slate-200 p-3 dark:bg-slate-950 dark:border-slate-700"><div class="text-[9px] font-bold uppercase text-slate-500">Balance after advance</div><div class="text-base font-black text-slate-900 dark:text-white mt-1" x-text="'₹' + netLoanAmount.toLocaleString('en-IN')"></div></div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-3">Estimate based on device MOP divided by the selected tenure. Advance amount is calculated using the number of advance EMIs. Confirm final EMI, processing fees, cashback and eligibility with the selected partner's current PoS offer before quoting.</p>
+                    </div>
+                    <div x-show="!availableSchemes.length" class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 dark:bg-amber-950/20 dark:border-amber-900 dark:text-amber-100">No partner-specific scheme is listed for this model variant in the embedded rate card. Please verify with the partner's current PoS rate card before quoting; a calculation is not shown until an eligible listed scheme is available.</div>
                 </div>
 
                 <!-- V-Shield Content -->
@@ -18040,7 +18082,7 @@ offerHighlights: {
                     this.selectedGroupForModal = group;
                     this.calcPartner = 'Bajaj Finance';
                     this.onPartnerChange();
-                    this.activeTab = variant.series === 'Extender Kit' ? 'cc-emi' : 'paper-finance';
+                    this.activeTab = 'offers';
                 },
 
                 getPartnerPf(partner) {
@@ -18638,6 +18680,84 @@ select,input,textarea,.omega-header-search,.omega-filter-search{background:var(-
     <script>
       (() => { let toastTimer; window.showOmegaToast = (message) => { const toast = document.getElementById('omegaToast'); if (!toast) return; toast.textContent = String(message || ''); toast.classList.add('is-visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2800); }; })();
     </script>
+
+
+<style id="omega-mobile-scroll-polish">
+/* Mobile-only polish: reserve space for the floating nav and keep the header from covering content. */
+@media (max-width: 767px) {
+  body { overflow-x: clip; }
+  body main {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+    scroll-margin-top: 12px;
+  }
+  body nav.fixed.z-50 {
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    min-height: 60px;
+    z-index: 1000 !important;
+    transition: transform .24s ease, opacity .24s ease !important;
+    will-change: transform;
+  }
+  body nav.fixed.z-50.omega-nav-hidden {
+    transform: translateY(calc(115% + env(safe-area-inset-bottom, 0px))) !important;
+    opacity: .15 !important;
+    pointer-events: none !important;
+  }
+  .header-container {
+    transition: transform .24s ease, opacity .24s ease !important;
+    will-change: transform;
+  }
+  .header-container.omega-header-hidden {
+    transform: translateY(-105%) !important;
+    opacity: .05 !important;
+    pointer-events: none !important;
+  }
+  .omega-product-grid, .omega-affordability-grid { scroll-margin-top: 12px; }
+}
+@media (min-width: 768px) {
+  body nav.fixed.z-50.omega-nav-hidden,
+  .header-container.omega-header-hidden { transform: none !important; opacity: 1 !important; pointer-events: auto !important; }
+}
+</style>
+<script id="omega-mobile-scroll-behavior">
+(function () {
+  if (window.__omegaMobileScrollPolish) return;
+  window.__omegaMobileScrollPolish = true;
+  var lastY = window.scrollY || 0;
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var header = document.querySelector('.header-container');
+    var nav = document.querySelector('body nav.fixed.z-50');
+    if (window.innerWidth > 767) {
+      if (header) header.classList.remove('omega-header-hidden');
+      if (nav) nav.classList.remove('omega-nav-hidden');
+      lastY = y;
+      return;
+    }
+    var delta = y - lastY;
+    var modalOpen = !!document.querySelector('.product-modal-overlay:not([style*="display: none"])');
+    if (modalOpen || y < 50) {
+      if (header) header.classList.remove('omega-header-hidden');
+      if (nav) nav.classList.remove('omega-nav-hidden');
+    } else if (delta > 5 && y > 100) {
+      if (header) header.classList.add('omega-header-hidden');
+      if (nav) nav.classList.add('omega-nav-hidden');
+    } else if (delta < -5) {
+      if (header) header.classList.remove('omega-header-hidden');
+      if (nav) nav.classList.remove('omega-nav-hidden');
+    }
+    lastY = y;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { lastY = window.scrollY || 0; update(); }
+  });
+})();
+</script>
 
 </body>
 </html>
